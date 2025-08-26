@@ -1,0 +1,8 @@
+version: 2
+sources:
+  - name: open_exchange
+    database: open-exchange-us
+    schema: rates_raw
+    tables:
+      - name: open_exchange_currency_raw
+        description: "This is a source table for dbt."
