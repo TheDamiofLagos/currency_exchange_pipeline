@@ -6,3 +6,6 @@ sources:
     tables:
       - name: open_exchange_currency_raw
         description: "This is a source table for dbt."
+      - name: open_exchange_rates_raw
+        description: "This is a source table for dbt."
+    
