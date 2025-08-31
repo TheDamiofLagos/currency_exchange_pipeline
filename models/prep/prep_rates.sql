@@ -7,7 +7,7 @@
 SELECT
     currency_code AS tocurrency,
     data_base AS fromcurrency,
-    data_timestamps AS created_at,
+    DATE(data_timestamps) AS created_at,
     rate
 FROM
     {{ ref('base_open_exchange__open_exchange_rates_raw') }}
