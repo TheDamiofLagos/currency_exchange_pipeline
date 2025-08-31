@@ -19,5 +19,5 @@ ON
 WHERE
     1 = 1
     {% if is_incremental() %}
-    AND rates.created_at > (SELECT MAX(created_at) FROM {this})
+    AND rates.created_at > (SELECT MAX(created_at) FROM {{this}})
     {% endif %}
