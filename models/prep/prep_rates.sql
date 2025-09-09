@@ -14,5 +14,5 @@ FROM
 WHERE
     _fivetran_deleted = FALSE
 QUALIFY ROW_NUMBER() OVER (
-    PARTITION BY currency_code ORDER BY DATE(data_timestamps) DESC
+    PARTITION BY currency_code, DATE(data_timestamps) ORDER BY DATE(data_timestamps) DESC
 ) = 1
