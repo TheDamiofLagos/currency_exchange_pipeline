@@ -5,8 +5,40 @@ sources:
     schema: rates_raw
     tables:
       - name: open_exchange_currency_raw
+        columns:
+          - name: code
+            data_tests:
+              - not_null
+          - name: _fivetran_synced
+            data_tests:
+              - not_null
+          - name: _fivetran_deleted
+            data_tests:
+              - not_null
+          - name: name
+            data_tests:
+              - not_null
         description: "This is a source table for dbt."
       - name: open_exchange_rates_raw
+        columns:
+          - name: currency_code
+            data_tests:
+              - not_null
+          - name: data_base
+            data_tests:
+              - not_null
+          - name: data_timestamps
+            data_tests:
+              - not_null
+          - name: _fivetran_deleted
+            data_tests:
+              - not_null
+          - name: _fivetran_synced
+            data_tests:
+              - not_null
+          - name: rate
+            data_tests:
+              - not_null
         description: "This is a source table for dbt."
         config:
           freshness:
