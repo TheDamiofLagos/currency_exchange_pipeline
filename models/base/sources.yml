@@ -8,4 +8,13 @@ sources:
         description: "This is a source table for dbt."
       - name: open_exchange_rates_raw
         description: "This is a source table for dbt."
+        config:
+          freshness:
+            warn_after:
+              count: 24
+              period: hour
+            error_after:
+              count: 36
+              period: hour
+          loaded_at_field: _fivetran_synced
     
