@@ -22,9 +22,11 @@ sources:
       - name: open_exchange_rates_raw
         columns:
           - name: currency_code
+            description: "{{ doc('currency_code') }}"
             data_tests:
               - not_null
           - name: data_base
+            description: "{{ doc('base_currency') }}"
             data_tests:
               - not_null
           - name: data_timestamps

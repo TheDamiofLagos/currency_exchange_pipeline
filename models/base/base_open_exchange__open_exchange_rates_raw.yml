@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: base_open_exchange__open_exchange_rates_raw
+    columns:
+      - name: currency_code
+        description: "{{ doc('currency_code') }}"
+      - name: data_base
+        description: "{{ doc('base_currency') }}"
+      - name: data_timestamps
+      - name: _fivetran_deleted
+      - name: _fivetran_synced
+      - name: rate
