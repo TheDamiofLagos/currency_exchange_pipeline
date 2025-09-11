@@ -39,6 +39,7 @@ sources:
             data_tests:
               - not_null
           - name: rate
+            description: "{{ doc('rate') }}"
             data_tests:
               - not_null
         description: "This is a source table for dbt."
