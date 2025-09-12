@@ -41,3 +41,21 @@ Exchange rates are sourced from the open-exchange API and captured at the time o
 - Used for converting all monetary values to standardized USD base currency
 - Enables consistent cross-currency reporting and analysis
 {% enddocs %}
+
+
+{% docs forexid %}
+A unique identifier for each exchange rate record in our system.
+
+This ID helps us track and reference specific exchange rates by combining:
+- The currency being converted to (like USD, EUR, GBP)
+- When that rate was recorded
+
+**Why it's useful:**
+- Ensures each exchange rate can be uniquely identified
+- Prevents duplicate or conflicting rates
+- Makes it easy to track how exchange rates change over time
+- Helps maintain data accuracy in our financial reports
+
+**Example:** 
+Each time we get a new USD exchange rate, it gets its own unique ID so we can tell different rate updates apart.
+{% enddocs %}
