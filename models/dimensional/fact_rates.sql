@@ -9,7 +9,8 @@ SELECT
     currency.currency_name,
     rates.fromcurrency,
     rates.created_at,
-    rates.rate
+    rates.rate AS unitsToUSD,
+    1/rates.rate AS USDToUnits
 FROM 
     {{ ref('prep_rates')}} AS rates
 LEFT JOIN
