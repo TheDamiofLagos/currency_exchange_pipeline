@@ -5,6 +5,7 @@
 }}
 
 SELECT
+    {{ dbt_utils.generate_surrogate_key(['rates.fromcurrency', 'rates.created_at']) }} AS forexid,
     rates.tocurrency,
     currency.currency_name,
     rates.fromcurrency,

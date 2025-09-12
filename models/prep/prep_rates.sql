@@ -5,8 +5,8 @@
 }}
 
 SELECT
-    currency_code AS tocurrency,
-    data_base AS fromcurrency,
+    currency_code AS fromcurrency,
+    data_base AS tocurrency,
     DATE(data_timestamps) AS created_at,
     rate
 FROM
