@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: fact_rates
+  - name: fact_exchange_rates_daily
     columns:
       - name: forexid
         description: "{{ doc('forexid') }}"
