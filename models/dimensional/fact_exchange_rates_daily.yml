@@ -12,7 +12,8 @@ models:
         description: "{{ doc('base_currency') }}"
         data_tests:
           - accepted_values:
-              values: ['USD']
+              arguments:
+                values: ['USD']
       - name: currency_name
       - name: fromcurrency
         description: "{{ doc('currency_code') }}"
