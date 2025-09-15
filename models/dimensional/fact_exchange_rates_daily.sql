@@ -12,8 +12,10 @@ SELECT
     rates.created_at,
     rates.rate AS unitsToUSD,
     LAG(rates.rate, 1) OVER (PARTITION BY rates.fromcurrency ORDER BY rates.created_at) AS previousDayUnitsToUSD,
-    rates.rate - (LAG(rates.rate, 1) OVER (PARTITION BY rates.fromcurrency ORDER BY rates.created_at)) AS dailyChange,
-    1/rates.rate AS USDToUnits
+    rates.rate - (LAG(rates.rate, 1) OVER (PARTITION BY rates.fromcurrency ORDER BY rates.created_at)) AS dailyChangeUnitsToUSD,
+    1/rates.rate AS USDToUnits,
+    LAG(1/rates.rate, 1) OVER (PARTITION BY rates.fromcurrency ORDER BY rates.created_at) AS previousDayUSDToUnits,
+    (1/rates.rate) - (LAG(1/rates.rate, 1) OVER (PARTITION BY rates.fromcurrency ORDER BY rates.created_at)) AS dailyChangeUSDToUnits
 FROM 
     {{ ref('prep_rates')}} AS rates
 LEFT JOIN
