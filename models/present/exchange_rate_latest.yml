@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: exchange_rate_latest
+    columns:
+      - name: forexid
+        description: "{{ doc('forexid') }}"
+        data_tests:
+          - unique
+          - not_null
+      - name: tocurrency
+        description: "{{ doc('base_currency') }}"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['USD']
+      - name: currency_name
+      - name: fromcurrency
+        description: "{{ doc('currency_code') }}"
+        data_tests:
+          - not_null
+      - name: created_at
+      - name: unitsToUSD
+      - name: USDToUnits
