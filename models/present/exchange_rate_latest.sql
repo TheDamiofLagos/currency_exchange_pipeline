@@ -5,7 +5,8 @@
 }}
 
 SELECT
-    {{ dbt_utils.star(from=ref('fact_exchange_rates_daily')) }}
+    {{ dbt_utils.star(from=ref('fact_exchange_rates_daily')) }},
+    CURRENT_DATE() AS dbt_run_at
 FROM 
     {{ ref("fact_exchange_rates_daily") }}
 WHERE created_at = (
