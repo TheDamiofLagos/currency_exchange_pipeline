@@ -1,6 +1,8 @@
 # Exchange Rate Data Pipeline
 
-A dbt-based pipeline that ingests Open Exchange rates (via Fivetran → GCS → BigQuery), applies transformations, and exposes analytical models.
+
+
+A dbt-based pipeline that ingests Open Exchange rates (via API → Fivetran → GCS → BigQuery), applies transformations, and exposes analytical models.
 
 ## Quick links
 - Project config: [dbt_project.yml](dbt_project.yml)  
