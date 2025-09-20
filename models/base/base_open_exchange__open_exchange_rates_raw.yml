@@ -2,13 +2,32 @@ version: 2
 
 models:
   - name: base_open_exchange__open_exchange_rates_raw
+    description: "Raw daily exchange rate data from Open Exchange API via Fivetran. Contains exchange rates for various currencies relative to USD with timestamp and sync metadata."
     columns:
       - name: currency_code
         description: "{{ doc('currency_code') }}"
+        data_tests:
+          - not_null
       - name: data_base
         description: "{{ doc('base_currency') }}"
+        data_tests:
+          - not_null
       - name: data_timestamps
+        description: "Unix timestamp indicating when this exchange rate was recorded by the Open Exchange API"
+        data_tests:
+          - not_null
       - name: _fivetran_deleted
+        description: "Boolean flag indicating if this record has been marked as deleted in the source system"
+        data_tests:
+          - not_null
       - name: _fivetran_synced
+        description: "Timestamp when this record was last synchronized by Fivetran from the source system"
+        data_tests:
+          - not_null
       - name: rate
         description: "{{ doc('rate') }}"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false

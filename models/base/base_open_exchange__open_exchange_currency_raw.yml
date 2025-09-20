@@ -2,16 +2,21 @@ version: 2
 
 models:
   - name: base_open_exchange__open_exchange_currency_raw
+    description: "Raw currency reference data from Open Exchange API via Fivetran. Contains currency codes and their corresponding full names with Fivetran metadata for tracking sync status."
     columns:
       - name: code
+        description: "{{ doc('currency_code') }}"
         data_tests:
           - not_null
       - name: _fivetran_synced
+        description: "Timestamp when this record was last synchronized by Fivetran from the source system"
         data_tests:
           - not_null
       - name: _fivetran_deleted
+        description: "Boolean flag indicating if this record has been marked as deleted in the source system"
         data_tests:
           - not_null
       - name: name
+        description: "The full descriptive name of the currency (e.g., 'United States Dollar', 'Euro')"
         data_tests:
           - not_null

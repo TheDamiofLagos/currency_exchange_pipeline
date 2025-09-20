@@ -2,6 +2,7 @@ version: 2
 
 models:
   - name: fact_exchange_rates_daily
+    description: "Business-ready daily exchange rates fact table with calculated metrics including historical comparisons and moving averages. This table provides comprehensive analytics for currency exchange rate analysis and reporting."
     columns:
       - name: forexid
         description: "{{ doc('forexid') }}"
@@ -15,10 +16,42 @@ models:
               arguments:
                 values: ['USD']
       - name: currency_name
+        description: "The full descriptive name of the currency being converted from (joined from currency reference data)"
       - name: fromcurrency
         description: "{{ doc('currency_code') }}"
         data_tests:
           - not_null
       - name: created_at
+        description: "The date for which this exchange rate is valid"
+        data_tests:
+          - not_null
       - name: unitsToUSD
+        description: "{{ doc('rate') }} - Number of foreign currency units required to equal 1 USD"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
+      - name: previousDayUnitsToUSD
+        description: "The previous day's exchange rate (units of foreign currency per 1 USD), used for day-over-day comparison"
+      - name: dailyChangeUnitsToUSD
+        description: "The absolute change in exchange rate from the previous day (current rate minus previous rate)"
       - name: USDToUnits
+        description: "Inverse of the exchange rate - Number of USD required to equal 1 unit of foreign currency (calculated as 1/rate)"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
+      - name: previousDayUSDToUnits
+        description: "The previous day's inverse exchange rate, used for day-over-day comparison of USD purchasing power"
+      - name: dailyChangeUSDToUnits
+        description: "The absolute change in inverse exchange rate from the previous day"
+      - name: movingAverage7Days
+        description: "7-day rolling average of the exchange rate, useful for identifying short-term trends and smoothing daily volatility"
+      - name: movingAverage30Days
+        description: "30-day rolling average of the exchange rate, useful for identifying medium-term trends"
+      - name: movingAverage60Days
+        description: "60-day rolling average of the exchange rate, useful for identifying longer-term trends"
+      - name: movingAverage90Days
+        description: "90-day rolling average of the exchange rate, useful for identifying quarterly trends and seasonal patterns"

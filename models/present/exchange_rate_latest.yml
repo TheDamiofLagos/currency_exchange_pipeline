@@ -2,6 +2,7 @@ version: 2
 
 models:
   - name: exchange_rate_latest
+    description: "Latest exchange rates view containing the most recent exchange rate data for all currencies. This model provides the current market rates with all calculated metrics from the dimensional layer, optimized for real-time applications and dashboards."
     columns:
       - name: forexid
         description: "{{ doc('forexid') }}"
@@ -15,10 +16,43 @@ models:
               arguments:
                 values: ['USD']
       - name: currency_name
+        description: "The full descriptive name of the currency being converted from"
       - name: fromcurrency
         description: "{{ doc('currency_code') }}"
         data_tests:
           - not_null
       - name: created_at
+        description: "The date for which this latest exchange rate is valid"
+        data_tests:
+          - not_null
       - name: unitsToUSD
+        description: "{{ doc('rate') }} - Current number of foreign currency units required to equal 1 USD"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
+      - name: previousDayUnitsToUSD
+        description: "The previous day's exchange rate for comparison with current rate"
+      - name: dailyChangeUnitsToUSD
+        description: "The absolute change in exchange rate from the previous day"
       - name: USDToUnits
+        description: "Current inverse exchange rate - Number of USD required to equal 1 unit of foreign currency"
+        data_tests:
+          - not_null
+      - name: previousDayUSDToUnits
+        description: "The previous day's inverse exchange rate for comparison"
+      - name: dailyChangeUSDToUnits
+        description: "The absolute change in inverse exchange rate from the previous day"
+      - name: movingAverage7Days
+        description: "7-day rolling average as of the latest date"
+      - name: movingAverage30Days
+        description: "30-day rolling average as of the latest date"
+      - name: movingAverage60Days
+        description: "60-day rolling average as of the latest date"
+      - name: movingAverage90Days
+        description: "90-day rolling average as of the latest date"
+      - name: dbt_run_at
+        description: "Timestamp when this dbt model was last executed, useful for tracking data freshness in downstream applications"
+        data_tests:
+          - not_null
