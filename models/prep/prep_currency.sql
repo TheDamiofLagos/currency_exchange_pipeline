@@ -7,8 +7,7 @@
 SELECT
     code AS currency_code,
     name AS currency_name,
-    _fivetran_synced AS created_at,
-    /* commit */
+    _fivetran_synced AS created_at
 FROM 
     {{ ref('base_open_exchange__open_exchange_currency_raw') }} AS currency
 WHERE 

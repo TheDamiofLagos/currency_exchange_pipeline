@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: prep_currency
+    description: "Cleaned and standardized currency reference data from the raw source. This model provides the latest currency codes and names, filtering out deleted records and deduplicating entries to ensure one record per currency."
+    columns:
+      - name: currency_code
+        description: "{{ doc('currency_code') }}"
+        data_tests:
+          - not_null
+          - unique
+      - name: currency_name
+        description: "The full name of the currency (e.g., 'United States Dollar', 'Euro', 'British Pound Sterling')"
+        data_tests:
+          - not_null
+      - name: created_at
+        description: "Timestamp when this currency record was last synchronized from the source system via Fivetran"
+        data_tests:
+          - not_null

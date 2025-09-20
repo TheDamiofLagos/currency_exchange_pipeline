@@ -59,3 +59,56 @@ This ID helps us track and reference specific exchange rates by combining:
 **Example:** 
 Each time we get a new USD exchange rate, it gets its own unique ID so we can tell different rate updates apart.
 {% enddocs %}
+
+{% docs moving_averages %}
+Rolling averages of exchange rates calculated over specified time periods to smooth out short-term fluctuations and identify trends.
+
+**Available Moving Averages:**
+- **7-day average**: Short-term trend indicator, useful for identifying recent market movements
+- **30-day average**: Medium-term trend indicator, commonly used for monthly analysis
+- **60-day average**: Longer-term trend indicator for quarterly planning
+- **90-day average**: Long-term trend indicator for seasonal pattern analysis
+
+**How they work:**
+Moving averages are calculated using window functions that look back over the specified number of days and compute the average exchange rate. Each day's moving average includes that day plus the previous N-1 days.
+
+**Usage:**
+- Compare current rates to moving averages to identify if currencies are trading above or below trend
+- Use multiple time frames together to understand short vs. long-term trends
+- Helpful for risk management and forecasting
+{% enddocs %}
+
+{% docs daily_changes %}
+Calculated differences between consecutive days' exchange rates, showing the absolute change in currency values from one day to the next.
+
+**Types of Daily Changes:**
+- **dailyChangeUnitsToUSD**: Change in foreign currency units per USD (rate - previous_rate)
+- **dailyChangeUSDToUnits**: Change in USD per foreign currency unit (inverse_rate - previous_inverse_rate)
+
+**Interpretation:**
+- Positive values indicate the foreign currency strengthened relative to USD
+- Negative values indicate the foreign currency weakened relative to USD
+- Larger absolute values indicate higher volatility
+
+**Business Use:**
+- Monitor currency volatility and market movements
+- Identify significant market events or trends
+- Risk assessment for international transactions
+- Alert systems for unusual currency movements
+{% enddocs %}
+
+{% docs data_timestamps %}
+Timestamps and dates used throughout the exchange rate pipeline to track when rates were recorded and processed.
+
+**Key Timestamp Fields:**
+- **data_timestamps**: Original Unix timestamp from Open Exchange API when rate was captured
+- **created_at**: Converted date field used for daily aggregation and analysis
+- **_fivetran_synced**: When Fivetran last synchronized this record from the source
+- **dbt_run_at**: When the dbt transformation was last executed
+
+**Data Flow:**
+1. Open Exchange API records rates with Unix timestamps
+2. Fivetran syncs data and adds sync timestamps
+3. dbt converts to dates for daily analysis
+4. Final models include dbt execution timestamps for freshness tracking
+{% enddocs %}

@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: prep_rates
+    description: "Daily exchange rates cleaned and prepared for analysis. This model provides one exchange rate record per currency per day, filtering out deleted records and deduplicating to ensure data quality. All rates are expressed relative to USD as the base currency."
+    columns:
+      - name: fromcurrency
+        description: "{{ doc('currency_code') }}"
+        data_tests:
+          - not_null
+      - name: tocurrency
+        description: "{{ doc('base_currency') }}"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['USD']
+      - name: created_at
+        description: "The date for which this exchange rate is valid (converted from timestamp to date)"
+        data_tests:
+          - not_null
+      - name: rate
+        description: "{{ doc('rate') }}"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
