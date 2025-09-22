@@ -30,8 +30,9 @@ models:
         data_tests:
           - not_null
           - dbt_utils.accepted_range:
-              min_value: 0
-              inclusive: false
+              arguments:
+                min_value: 0
+                inclusive: false
       - name: previousDayUnitsToUSD
         description: "The previous day's exchange rate (units of foreign currency per 1 USD), used for day-over-day comparison"
       - name: dailyChangeUnitsToUSD
@@ -41,8 +42,9 @@ models:
         data_tests:
           - not_null
           - dbt_utils.accepted_range:
-              min_value: 0
-              inclusive: false
+              arguments:
+                min_value: 0
+                inclusive: false
       - name: previousDayUSDToUnits
         description: "The previous day's inverse exchange rate, used for day-over-day comparison of USD purchasing power"
       - name: dailyChangeUSDToUnits

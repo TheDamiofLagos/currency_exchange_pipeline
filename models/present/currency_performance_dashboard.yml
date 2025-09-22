@@ -1,0 +1,197 @@
+version: 2
+
+models:
+  - name: currency_performance_dashboard
+    description: >
+      Currency performance dashboard providing comprehensive metrics across multiple time periods.
+      Shows YTD, QTD, MTD, 7-day, and 30-day performance with rankings, percentiles, and risk metrics.
+      Updated daily and optimized for business intelligence and reporting use cases.
+    
+    columns:
+      - name: fromcurrency
+        description: "Source currency code (e.g., EUR, GBP, JPY)"
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('prep_currency')
+                field: currency_code
+
+      - name: currency_name
+        description: "Full currency name (e.g., Euro, British Pound, Japanese Yen)"
+        data_tests:
+          - not_null
+
+      - name: tocurrency
+        description: "Base currency for exchange rate (typically USD)"
+        data_tests:
+          - not_null
+
+      - name: current_rate
+        description: "Current exchange rate (units of fromcurrency per 1 unit of tocurrency)"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: false
+
+      - name: daily_change
+        description: "Absolute change in exchange rate from previous day"
+
+      - name: daily_change_pct
+        description: "Percentage change in exchange rate from previous day"
+
+      - name: ytd_performance_pct
+        description: "Year-to-date performance as percentage change from start of year"
+
+      - name: qtd_performance_pct
+        description: "Quarter-to-date performance as percentage change from start of quarter"
+
+      - name: mtd_performance_pct
+        description: "Month-to-date performance as percentage change from start of month"
+
+      - name: week_7d_performance_pct
+        description: "7-day performance as percentage change from 7 days ago"
+
+      - name: month_30d_performance_pct
+        description: "30-day performance as percentage change from 30 days ago"
+
+      - name: volatility_vs_ma30
+        description: "Current deviation from 30-day moving average as percentage (volatility proxy)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: ytd_rank
+        description: "Ranking by YTD performance (1 = best performer)"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+
+      - name: qtd_rank
+        description: "Ranking by QTD performance (1 = best performer)"
+        data_tests:
+          - not_null
+
+      - name: mtd_rank
+        description: "Ranking by MTD performance (1 = best performer)"
+        data_tests:
+          - not_null
+
+      - name: week_7d_rank
+        description: "Ranking by 7-day performance (1 = best performer)"
+        data_tests:
+          - not_null
+
+      - name: month_30d_rank
+        description: "Ranking by 30-day performance (1 = best performer)"
+        data_tests:
+          - not_null
+
+      - name: ytd_percentile
+        description: "YTD performance percentile (0-100 scale)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+                inclusive: true
+
+      - name: qtd_percentile
+        description: "QTD performance percentile (0-100 scale)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+                inclusive: true
+
+      - name: mtd_percentile
+        description: "MTD performance percentile (0-100 scale)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+                inclusive: true
+
+      - name: ytd_performance_category
+        description: "Categorical classification of YTD performance"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_values:
+              arguments:
+                values: ['Strong Gain', 'Moderate Gain', 'Stable', 'Moderate Loss', 'Strong Loss']
+
+      - name: is_top_5_ytd
+        description: "Flag indicating if currency is in top 5 YTD performers"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: is_bottom_5_ytd
+        description: "Flag indicating if currency is in bottom 5 YTD performers"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: risk_adjusted_ytd_performance
+        description: "YTD performance divided by volatility (risk-adjusted return)"
+
+      - name: as_of_date
+        description: "Date of the exchange rate data used for calculations"
+        data_tests:
+          - not_null
+
+      - name: dashboard_updated_at
+        description: "Timestamp when the dashboard model was last updated"
+        data_tests:
+          - not_null
+
+      - name: total_currencies
+        description: "Total number of currencies in the dataset for ranking context"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - fromcurrency
+              - as_of_date
+      
+      # Test that top 5 and bottom 5 flags are mutually exclusive
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "NOT (is_top_5_ytd = true AND is_bottom_5_ytd = true)"
+          config:
+            severity: error
+
+      # Test that rankings are within expected range
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "ytd_rank <= total_currencies"
+          config:
+            severity: error
+
+    config:
+      materialized: table
+      tags: ["dashboard", "performance", "present"]
+      meta:
+        owner: "data_team"
+        update_frequency: "daily"
+        business_use_case: "currency performance monitoring and reporting"
