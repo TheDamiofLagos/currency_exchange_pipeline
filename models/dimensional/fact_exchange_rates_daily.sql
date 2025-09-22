@@ -27,7 +27,7 @@ SELECT
         3) AS movingAverage60Days,
     ROUND(
         AVG(rates.rate) OVER (PARTITION BY rates.tocurrency, rates.fromcurrency ORDER BY rates.created_at ROWS BETWEEN 89 PRECEDING AND CURRENT ROW),
-        3) AS movingAverage90Days,
+        3) AS movingAverage90Days
 FROM 
     {{ ref('prep_rates')}} AS rates
 LEFT JOIN

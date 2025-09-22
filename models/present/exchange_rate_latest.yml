@@ -30,8 +30,9 @@ models:
         data_tests:
           - not_null
           - dbt_utils.accepted_range:
-              min_value: 0
-              inclusive: false
+              arguments:
+                min_value: 0
+                inclusive: false
       - name: previousDayUnitsToUSD
         description: "The previous day's exchange rate for comparison with current rate"
       - name: dailyChangeUnitsToUSD
