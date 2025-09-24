@@ -111,3 +111,4 @@ Timestamps and dates used throughout the exchange rate pipeline to track when ra
 2. Fivetran syncs data and adds sync timestamps
 3. dbt converts to dates for daily analysis
 4. Final models include dbt execution timestamps for freshness tracking
+{% enddocs %}

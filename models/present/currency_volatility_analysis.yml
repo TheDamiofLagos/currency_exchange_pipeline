@@ -1,0 +1,240 @@
+version: 2
+
+models:
+  - name: currency_volatility_analysis
+    description: >
+      Comprehensive currency volatility and risk analysis model providing technical indicators,
+      Bollinger Bands, volatility regimes, and risk classifications for currency trading and 
+      risk management. Complements currency_performance_dashboard by focusing on risk metrics 
+      rather than returns analysis.
+    
+    columns:
+      - name: fromcurrency
+        description: "{{ doc('currency_code') }}"
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('prep_currency')
+                field: currency_code
+
+      - name: currency_name
+        description: "Full currency name for display purposes"
+        data_tests:
+          - not_null
+
+      - name: tocurrency
+        description: "{{ doc('base_currency') }}"
+        data_tests:
+          - not_null
+
+      - name: current_rate
+        description: "{{ doc('rate') }} - Current exchange rate for volatility analysis"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: false
+
+      - name: daily_change
+        description: "{{ doc('daily_changes') }} - Absolute daily change in exchange rate"
+
+      - name: volatility_7d
+        description: "7-day rolling standard deviation of exchange rates (short-term volatility)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: volatility_30d
+        description: "30-day rolling standard deviation of exchange rates (medium-term volatility)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: volatility_60d
+        description: "60-day rolling standard deviation of exchange rates (longer-term volatility)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: volatility_90d
+        description: "90-day rolling standard deviation of exchange rates (long-term volatility)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: avg_daily_volatility_30d
+        description: "30-day rolling average of absolute daily percentage changes"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: current_daily_change_pct
+        description: "Current day's absolute percentage change in exchange rate"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: volatility_30d_percentile
+        description: "Percentile ranking of 30-day volatility (0-100 scale)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+                inclusive: true
+
+      - name: daily_volatility_percentile
+        description: "Percentile ranking of daily volatility (0-100 scale)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+                inclusive: true
+
+      - name: volatility_rank_30d
+        description: "Global ranking by 30-day volatility (1 = most volatile)"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+
+      - name: daily_volatility_rank
+        description: "Global ranking by daily volatility (1 = most volatile)"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+
+      - name: bollinger_upper
+        description: "Upper Bollinger Band (30-day MA + 2 standard deviations)"
+        data_tests:
+          - not_null
+
+      - name: bollinger_lower
+        description: "Lower Bollinger Band (30-day MA - 2 standard deviations)"
+        data_tests:
+          - not_null
+
+      - name: bollinger_position_pct
+        description: "Current rate position within Bollinger Bands as percentage (-100 to +100)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: -200
+                max_value: 200
+                inclusive: true
+
+      - name: volatility_regime
+        description: "Classification of current volatility level"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_values:
+              arguments:
+                values: ['Low Volatility', 'Normal Volatility', 'High Volatility', 'Extreme Volatility']
+
+      - name: bollinger_signal
+        description: "Technical analysis signal based on Bollinger Band position"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_values:
+              arguments:
+                values: ['Above Upper Band', 'Below Lower Band', 'Upper Half', 'Lower Half', 'Middle Range']
+
+      - name: volatility_breakout_status
+        description: "Current volatility level compared to recent average"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_values:
+              arguments:
+                values: ['High Volatility Breakout', 'Moderate Volatility Spike', 'Normal Volatility', 'Low Volatility Day']
+
+      - name: risk_classification
+        description: "Overall risk level based on volatility rankings"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_values:
+              arguments:
+                values: ['Low Risk', 'Medium Risk', 'High Risk', 'Extreme Risk']
+
+      - name: volatility_trend
+        description: "Volatility trend direction (7-day vs 30-day comparison)"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_values:
+              arguments:
+                values: ['Increasing Volatility', 'Decreasing Volatility', 'Stable Volatility']
+
+      - name: analysis_updated_at
+        description: "Timestamp when volatility analysis was last updated"
+        data_tests:
+          - not_null
+
+      - name: created_at
+        description: "Date of the exchange rate data used for analysis"
+        data_tests:
+          - not_null
+
+      - name: total_currencies
+        description: "Total number of currencies analyzed for ranking context"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - fromcurrency
+              - created_at
+      
+      # Test Bollinger Band logic
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "bollinger_upper > bollinger_lower"
+          config:
+            severity: error
+
+      # Test volatility rankings are consistent
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "volatility_rank_30d <= total_currencies"
+          config:
+            severity: error
+
+      # Test volatility values are non-negative
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "volatility_30d >= 0 AND volatility_7d >= 0"
+          config:
+            severity: error
+
+    config:
+      materialized: table
+      tags: ["volatility", "risk", "technical_analysis", "present"]
+      meta:
+        owner: "risk_team"
+        update_frequency: "daily"
+        business_use_case: "currency volatility monitoring, risk management, and technical analysis"
+        related_models: ["currency_performance_dashboard", "exchange_rate_latest"]
