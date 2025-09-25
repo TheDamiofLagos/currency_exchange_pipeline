@@ -1,0 +1,420 @@
+direction: right
+
+# Dark theme styling
+vars: {
+  d2-config: {
+    dark-theme-id: 200
+    pad: 20
+  }
+}
+
+# Data Sources
+openExchangeAPI: {
+  label: "🌍 Open Exchange\nRates API"
+  shape: cloud
+  style: {
+    fill: "#1e3a8a"
+    stroke: "#3b82f6"
+    font-color: "#f1f5f9"
+  }
+}
+
+# Data Ingestion
+fivetran: {
+  label: "🔄 Fivetran\n(ETL)"
+  shape: rectangle
+  style: {
+    fill: "#7c2d12"
+    stroke: "#ea580c"
+    font-color: "#fef7ed"
+  }
+}
+
+# Data Lake
+gcs: {
+  label: "☁️ Google Cloud Storage\n(Raw Parquet Files)"
+  shape: cylinder
+  style: {
+    fill: "#064e3b"
+    stroke: "#10b981"
+    font-color: "#ecfdf5"
+  }
+}
+
+# Data Transfer
+gcpDataTransfer: {
+  label: "⚡ GCP Data Transfer\nService"
+  shape: rectangle
+  style: {
+    fill: "#581c87"
+    stroke: "#a855f7"
+    font-color: "#faf5ff"
+  }
+}
+
+# Data Warehouse
+bigquery: {
+  label: "🏢 BigQuery\n(Data Warehouse)"
+  shape: cylinder
+  style: {
+    fill: "#92400e"
+    stroke: "#f59e0b"
+    font-color: "#fffbeb"
+  }
+}
+
+# dbt Transformation Layers
+dbt: {
+  label: "🛠️ dbt Transformations"
+  shape: rectangle
+  style: {
+    fill: "#be185d"
+    stroke: "#ec4899"
+    font-color: "#fdf2f8"
+  }
+  
+  base: {
+    label: "🗃️ Base Layer\n(1:1 Source Mapping)"
+    shape: rectangle
+    style: {
+      fill: "#365314"
+      stroke: "#84cc16"
+      font-color: "#f7fee7"
+    }
+  }
+  
+  prep: {
+    label: "⚙️ Prep Layer\n(Cleaning & Canonicalization)"
+    shape: rectangle
+    style: {
+      fill: "#1e40af"
+      stroke: "#3b82f6"
+      font-color: "#eff6ff"
+    }
+  }
+  
+  dimensional: {
+    label: "✨ Dimensional Layer\n(Business Ready)"
+    shape: rectangle
+    style: {
+      fill: "#a16207"
+      stroke: "#eab308"
+      font-color: "#fefce8"
+    }
+  }
+  
+  present: {
+    label: "📊 Present Layer\n(Analytics & Dashboards)"
+    shape: rectangle
+    style: {
+      fill: "#be185d"
+      stroke: "#ec4899"
+      font-color: "#fdf2f8"
+    }
+  }
+}
+
+# Raw Tables in BigQuery
+rawTables: {
+  label: "📋 Raw Tables"
+  style: {
+    fill: "#374151"
+    stroke: "#6b7280"
+    font-color: "#f9fafb"
+  }
+  
+  currencyRaw: {
+    label: "📄 open_exchange_currency_raw"
+    shape: page
+    style: {
+      fill: "#1f2937"
+      stroke: "#4b5563"
+      font-color: "#f3f4f6"
+    }
+  }
+  
+  ratesRaw: {
+    label: "📄 open_exchange_rates_raw"
+    shape: page
+    style: {
+      fill: "#1f2937"
+      stroke: "#4b5563"
+      font-color: "#f3f4f6"
+    }
+  }
+}
+
+# Base Models
+baseModels: {
+  label: "🗃️ Base Models"
+  style: {
+    fill: "#365314"
+    stroke: "#84cc16"
+    font-color: "#f7fee7"
+  }
+  
+  baseCurrency: {
+    label: "📝 base_open_exchange__\nopen_exchange_currency_raw"
+    shape: page
+    style: {
+      fill: "#365314"
+      stroke: "#84cc16"
+      font-color: "#f7fee7"
+    }
+  }
+  
+  baseRates: {
+    label: "📝 base_open_exchange__\nopen_exchange_rates_raw"
+    shape: page
+    style: {
+      fill: "#365314"
+      stroke: "#84cc16"
+      font-color: "#f7fee7"
+    }
+  }
+}
+
+# Prep Models
+prepModels: {
+  label: "⚙️ Prep Models"
+  style: {
+    fill: "#1e40af"
+    stroke: "#3b82f6"
+    font-color: "#eff6ff"
+  }
+  
+  prepCurrency: {
+    label: "📝 prep_currency"
+    shape: page
+    style: {
+      fill: "#1e40af"
+      stroke: "#3b82f6"
+      font-color: "#eff6ff"
+    }
+  }
+  
+  prepRates: {
+    label: "📝 prep_rates"
+    shape: page
+    style: {
+      fill: "#1e40af"
+      stroke: "#3b82f6"
+      font-color: "#eff6ff"
+    }
+  }
+}
+
+# Dimensional Models
+dimModels: {
+  label: "✨ Dimensional Models"
+  style: {
+    fill: "#a16207"
+    stroke: "#eab308"
+    font-color: "#fefce8"
+  }
+  
+  factRates: {
+    label: "📝 fact_exchange_rates_daily"
+    shape: page
+    style: {
+      fill: "#a16207"
+      stroke: "#eab308"
+      font-color: "#fefce8"
+    }
+  }
+}
+
+# Present Models
+presentModels: {
+  label: "📊 Present Models"
+  style: {
+    fill: "#be185d"
+    stroke: "#ec4899"
+    font-color: "#fdf2f8"
+  }
+  
+  dashboard: {
+    label: "📊 currency_performance_dashboard"
+    shape: page
+    style: {
+      fill: "#be185d"
+      stroke: "#ec4899"
+      font-color: "#fdf2f8"
+    }
+  }
+  
+  volatility: {
+    label: "📈 currency_volatility_analysis"
+    shape: page
+    style: {
+      fill: "#be185d"
+      stroke: "#ec4899"
+      font-color: "#fdf2f8"
+    }
+  }
+  
+  latest: {
+    label: "📝 exchange_rate_latest"
+    shape: page
+    style: {
+      fill: "#be185d"
+      stroke: "#ec4899"
+      font-color: "#fdf2f8"
+    }
+  }
+}
+
+# Data Flow with styling
+openExchangeAPI -> fivetran: {
+  label: "API Calls"
+  style: {
+    stroke: "#3b82f6"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+fivetran -> gcs: {
+  label: "Extract & Load\n(Parquet Files)"
+  style: {
+    stroke: "#10b981"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+gcs -> gcpDataTransfer: {
+  label: "Parquet Files"
+  style: {
+    stroke: "#a855f7"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+gcpDataTransfer -> bigquery: {
+  label: "Load to BigQuery"
+  style: {
+    stroke: "#f59e0b"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+bigquery -> rawTables: {
+  label: "Contains"
+  style: {
+    stroke: "#6b7280"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+rawTables.currencyRaw -> baseModels.baseCurrency: {
+  label: "1:1 mapping"
+  style: {
+    stroke: "#84cc16"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+rawTables.ratesRaw -> baseModels.baseRates: {
+  label: "1:1 mapping"
+  style: {
+    stroke: "#84cc16"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+baseModels.baseCurrency -> prepModels.prepCurrency: {
+  label: "Clean & Transform"
+  style: {
+    stroke: "#3b82f6"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+baseModels.baseRates -> prepModels.prepRates: {
+  label: "Clean & Transform"
+  style: {
+    stroke: "#3b82f6"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+prepModels.prepCurrency -> dimModels.factRates: {
+  label: "Business Logic"
+  style: {
+    stroke: "#eab308"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+prepModels.prepRates -> dimModels.factRates: {
+  label: "Business Logic"
+  style: {
+    stroke: "#eab308"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+dimModels.factRates -> presentModels.dashboard: {
+  label: "Analytics"
+  style: {
+    stroke: "#ec4899"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+dimModels.factRates -> presentModels.volatility: {
+  label: "Analytics"
+  style: {
+    stroke: "#ec4899"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+dimModels.factRates -> presentModels.latest: {
+  label: "Analytics"
+  style: {
+    stroke: "#ec4899"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+# dbt layer connections with styling
+dbt.base -> dbt.prep: {
+  label: "flows to"
+  style: {
+    stroke: "#3b82f6"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+dbt.prep -> dbt.dimensional: {
+  label: "flows to"
+  style: {
+    stroke: "#eab308"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
+
+dbt.dimensional -> dbt.present: {
+  label: "flows to"
+  style: {
+    stroke: "#ec4899"
+    stroke-width: 2
+    font-color: "#e5e7eb"
+  }
+}
