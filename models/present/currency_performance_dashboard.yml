@@ -125,7 +125,7 @@ models:
         description: "Categorical classification of YTD performance"
         data_tests:
           - not_null
-          - dbt_utils.accepted_values:
+          - accepted_values:
               arguments:
                 values: ['Strong Gain', 'Moderate Gain', 'Stable', 'Moderate Loss', 'Strong Loss']
 
@@ -133,17 +133,11 @@ models:
         description: "Flag indicating if currency is in top 5 YTD performers"
         data_tests:
           - not_null
-          - dbt_utils.accepted_values:
-              arguments:
-                values: [true, false]
 
       - name: is_bottom_5_ytd
         description: "Flag indicating if currency is in bottom 5 YTD performers"
         data_tests:
           - not_null
-          - dbt_utils.accepted_values:
-              arguments:
-                values: [true, false]
 
       - name: risk_adjusted_ytd_performance
         description: "YTD performance divided by volatility (risk-adjusted return)"
