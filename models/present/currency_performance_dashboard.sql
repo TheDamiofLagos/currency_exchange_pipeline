@@ -21,11 +21,7 @@ WITH current_rates AS (
 
 period_boundaries AS (
     SELECT
-        DATE_TRUNC(CURRENT_DATE(), YEAR) AS ytd_start,
-        DATE_TRUNC(CURRENT_DATE(), QUARTER) AS qtd_start,
-        DATE_TRUNC(CURRENT_DATE(), MONTH) AS mtd_start,
-        DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AS week_start,
-        DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY) AS month_start
+        {{ get_period_boundaries(['ytd', 'qtd', 'mtd', '7d', '30d']) }}
 ),
 
 historical_rates AS (
@@ -37,8 +33,8 @@ historical_rates AS (
             WHEN created_at >= (SELECT ytd_start FROM period_boundaries) THEN 'YTD'
             WHEN created_at >= (SELECT qtd_start FROM period_boundaries) THEN 'QTD' 
             WHEN created_at >= (SELECT mtd_start FROM period_boundaries) THEN 'MTD'
-            WHEN created_at >= (SELECT week_start FROM period_boundaries) THEN '7D'
-            WHEN created_at >= (SELECT month_start FROM period_boundaries) THEN '30D'
+            WHEN created_at >= (SELECT 7d_start FROM period_boundaries) THEN '7D'
+            WHEN created_at >= (SELECT 30d_start FROM period_boundaries) THEN '30D'
         END AS period_type,
         ROW_NUMBER() OVER (
             PARTITION BY fromcurrency, 
@@ -46,13 +42,13 @@ historical_rates AS (
                 WHEN created_at >= (SELECT ytd_start FROM period_boundaries) THEN 'YTD'
                 WHEN created_at >= (SELECT qtd_start FROM period_boundaries) THEN 'QTD'
                 WHEN created_at >= (SELECT mtd_start FROM period_boundaries) THEN 'MTD'
-                WHEN created_at >= (SELECT week_start FROM period_boundaries) THEN '7D'
-                WHEN created_at >= (SELECT month_start FROM period_boundaries) THEN '30D'
+                WHEN created_at >= (SELECT 7d_start FROM period_boundaries) THEN '7D'
+                WHEN created_at >= (SELECT 30d_start FROM period_boundaries) THEN '30D'
             END
             ORDER BY created_at ASC
         ) AS rn
     FROM {{ ref('fact_exchange_rates_daily') }}
-    WHERE created_at >= (SELECT month_start FROM period_boundaries)
+    WHERE created_at >= (SELECT 30d_start FROM period_boundaries)
 ),
 
 period_start_rates AS (
@@ -73,15 +69,15 @@ performance_metrics AS (
         c.dailyChangeUnitsToUSD AS daily_change,
         c.dailyChangeUnitsToUSD / NULLIF(c.unitsToUSD - c.dailyChangeUnitsToUSD, 0) * 100 AS daily_change_pct,
         
-        -- Performance calculations
-        ROUND((c.unitsToUSD - ytd.period_start_rate) / NULLIF(ytd.period_start_rate, 0) * 100, 2) AS ytd_performance_pct,
-        ROUND((c.unitsToUSD - qtd.period_start_rate) / NULLIF(qtd.period_start_rate, 0) * 100, 2) AS qtd_performance_pct,
-        ROUND((c.unitsToUSD - mtd.period_start_rate) / NULLIF(mtd.period_start_rate, 0) * 100, 2) AS mtd_performance_pct,
-        ROUND((c.unitsToUSD - week.period_start_rate) / NULLIF(week.period_start_rate, 0) * 100, 2) AS week_7d_performance_pct,
-        ROUND((c.unitsToUSD - month.period_start_rate) / NULLIF(month.period_start_rate, 0) * 100, 2) AS month_30d_performance_pct,
+        -- Performance calculations using macro (much cleaner!)
+        {{ calculate_performance_pct('c.unitsToUSD', 'ytd.period_start_rate') }} AS ytd_performance_pct,
+        {{ calculate_performance_pct('c.unitsToUSD', 'qtd.period_start_rate') }} AS qtd_performance_pct,
+        {{ calculate_performance_pct('c.unitsToUSD', 'mtd.period_start_rate') }} AS mtd_performance_pct,
+        {{ calculate_performance_pct('c.unitsToUSD', 'week.period_start_rate') }} AS week_7d_performance_pct,
+        {{ calculate_performance_pct('c.unitsToUSD', 'month.period_start_rate') }} AS month_30d_performance_pct,
         
-        -- Volatility proxy using moving average deviation
-        ROUND(ABS(c.unitsToUSD - c.movingAverage30Days) / NULLIF(c.movingAverage30Days, 0) * 100, 2) AS volatility_vs_ma30,
+        -- Volatility proxy using macro
+        {{ calculate_volatility_vs_ma('c.unitsToUSD', 'c.movingAverage30Days') }},
         
         c.created_at AS as_of_date
         
@@ -112,25 +108,14 @@ ranked_performance AS (
 )
 
 SELECT *,
-    -- Performance categories
-    CASE 
-        WHEN ytd_performance_pct >= 10 THEN 'Strong Gain'
-        WHEN ytd_performance_pct >= 3 THEN 'Moderate Gain'
-        WHEN ytd_performance_pct BETWEEN -3 AND 3 THEN 'Stable'
-        WHEN ytd_performance_pct >= -10 THEN 'Moderate Loss'
-        ELSE 'Strong Loss'
-    END AS ytd_performance_category,
+    -- Using macros for cleaner classification logic
+    {{ classify_performance('ytd_performance_pct') }} AS ytd_performance_category,
     
-    -- Top/Bottom performer flags
-    CASE WHEN ytd_rank <= 5 THEN TRUE ELSE FALSE END AS is_top_5_ytd,
-    CASE WHEN ytd_rank > total_currencies - 5 THEN TRUE ELSE FALSE END AS is_bottom_5_ytd,
+    -- Top/Bottom performer flags using macro
+    {{ top_bottom_flags('ytd_rank', 'total_currencies') }},
     
-    -- Risk-adjusted performance (simplified)
-    CASE 
-        WHEN volatility_vs_ma30 > 0 
-        THEN ROUND(ytd_performance_pct / NULLIF(volatility_vs_ma30, 0), 2) 
-        ELSE NULL 
-    END AS risk_adjusted_ytd_performance,
+    -- Risk-adjusted performance using macro
+    {{ calculate_risk_adjusted_performance('ytd_performance_pct', 'volatility_vs_ma') }},
     
     CURRENT_DATETIME() AS dashboard_updated_at
     

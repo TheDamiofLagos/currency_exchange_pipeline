@@ -11,23 +11,18 @@ SELECT
     rates.fromcurrency,
     rates.created_at,
     rates.rate AS unitsToUSD,
-    LAG(rates.rate, 1) OVER (PARTITION BY rates.fromcurrency ORDER BY rates.created_at) AS previousDayUnitsToUSD,
-    rates.rate - (LAG(rates.rate, 1) OVER (PARTITION BY rates.fromcurrency ORDER BY rates.created_at)) AS dailyChangeUnitsToUSD,
+    
+    -- Using macro for lagged values and daily changes with clean column names
+    {{ calculate_lagged_values('rates.rate', suffix='UnitsToUSD') }},
+    {{ calculate_daily_changes('rates.rate', suffix='UnitsToUSD') }},
+    
+    -- Currency conversion ratios
     1/rates.rate AS USDToUnits,
     LAG(1/rates.rate, 1) OVER (PARTITION BY rates.fromcurrency ORDER BY rates.created_at) AS previousDayUSDToUnits,
     (1/rates.rate) - (LAG(1/rates.rate, 1) OVER (PARTITION BY rates.fromcurrency ORDER BY rates.created_at)) AS dailyChangeUSDToUnits,
-    ROUND(
-        AVG(rates.rate) OVER (PARTITION BY rates.tocurrency, rates.fromcurrency ORDER BY rates.created_at ROWS BETWEEN 6 PRECEDING AND CURRENT ROW),
-        3) AS movingAverage7Days,
-    ROUND(
-        AVG(rates.rate) OVER (PARTITION BY rates.tocurrency, rates.fromcurrency ORDER BY rates.created_at ROWS BETWEEN 29 PRECEDING AND CURRENT ROW),
-        3) AS movingAverage30Days,
-    ROUND(
-        AVG(rates.rate) OVER (PARTITION BY rates.tocurrency, rates.fromcurrency ORDER BY rates.created_at ROWS BETWEEN 59 PRECEDING AND CURRENT ROW),
-        3) AS movingAverage60Days,
-    ROUND(
-        AVG(rates.rate) OVER (PARTITION BY rates.tocurrency, rates.fromcurrency ORDER BY rates.created_at ROWS BETWEEN 89 PRECEDING AND CURRENT ROW),
-        3) AS movingAverage90Days
+    
+    -- Using macro for moving averages (much cleaner!)
+    {{ calculate_moving_averages('rates.rate', [7, 30, 60, 90], 'rates.fromcurrency', 'rates.created_at') }}
 FROM 
     {{ ref('prep_rates')}} AS rates
 LEFT JOIN
