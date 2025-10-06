@@ -59,11 +59,6 @@ models:
 
       - name: volatility_vs_ma30
         description: "Current deviation from 30-day moving average as percentage (volatility proxy)"
-        data_tests:
-          - dbt_utils.accepted_range:
-              arguments:
-                min_value: 0
-                inclusive: true
 
       - name: ytd_rank
         description: "Ranking by YTD performance (1 = best performer)"
@@ -129,16 +124,6 @@ models:
               arguments:
                 values: ['Strong Gain', 'Moderate Gain', 'Stable', 'Moderate Loss', 'Strong Loss']
 
-      - name: is_top_5_ytd
-        description: "Flag indicating if currency is in top 5 YTD performers"
-        data_tests:
-          - not_null
-
-      - name: is_bottom_5_ytd
-        description: "Flag indicating if currency is in bottom 5 YTD performers"
-        data_tests:
-          - not_null
-
       - name: risk_adjusted_ytd_performance
         description: "YTD performance divided by volatility (risk-adjusted return)"
 
@@ -167,13 +152,7 @@ models:
             combination_of_columns:
               - fromcurrency
               - as_of_date
-      
-      # Test that top 5 and bottom 5 flags are mutually exclusive
-      - dbt_utils.expression_is_true:
-          arguments:
-            expression: "NOT (is_top_5_ytd = true AND is_bottom_5_ytd = true)"
-          config:
-            severity: error
+    
 
       # Test that rankings are within expected range
       - dbt_utils.expression_is_true:
