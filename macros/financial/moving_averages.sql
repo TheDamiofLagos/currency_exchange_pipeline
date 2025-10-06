@@ -12,7 +12,7 @@
   {%- endfor -%}
 {% endmacro %}
 
-{% macro calculate_lagged_values(column, partition_by='fromcurrency', order_by='created_at', lag_periods=[1], suffix='') %}
+{% macro calculate_lagged_values(column, partition_by='fromcurrency', order_by='rates.created_at', lag_periods=[1], suffix='') %}
   {%- for lag_period in lag_periods -%}
     LAG({{ column }}, {{ lag_period }}) OVER (
         PARTITION BY {{ partition_by }} 
@@ -22,7 +22,7 @@
   {%- endfor -%}
 {% endmacro %}
 
-{% macro calculate_daily_changes(column, partition_by='fromcurrency', order_by='created_at', suffix='') %}
+{% macro calculate_daily_changes(column, partition_by='fromcurrency', order_by='rates.created_at', suffix='') %}
   {{ column }} - (
     LAG({{ column }}, 1) OVER (
         PARTITION BY {{ partition_by }} 
