@@ -12,7 +12,7 @@
   
   {%- for period in periods -%}
     {%- if period in period_map -%}
-      {{ period_map[period] }} AS {{ period }}_start
+      {{ period_map[period] }} AS _{{ period }}_start
       {%- if not loop.last -%},{%- endif -%}
     {%- else -%}
       {%- do exceptions.raise_compiler_error("Invalid period: " ~ period ~ ". Valid periods are: " ~ period_map.keys() | join(', ')) -%}

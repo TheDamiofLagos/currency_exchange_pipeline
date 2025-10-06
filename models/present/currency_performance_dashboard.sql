@@ -30,25 +30,25 @@ historical_rates AS (
         created_at,
         unitsToUSD,
         CASE 
-            WHEN created_at >= (SELECT ytd_start FROM period_boundaries) THEN 'YTD'
-            WHEN created_at >= (SELECT qtd_start FROM period_boundaries) THEN 'QTD' 
-            WHEN created_at >= (SELECT mtd_start FROM period_boundaries) THEN 'MTD'
-            WHEN created_at >= (SELECT 7d_start FROM period_boundaries) THEN '7D'
-            WHEN created_at >= (SELECT 30d_start FROM period_boundaries) THEN '30D'
+            WHEN created_at >= (SELECT _ytd_start FROM period_boundaries) THEN 'YTD'
+            WHEN created_at >= (SELECT _qtd_start FROM period_boundaries) THEN 'QTD' 
+            WHEN created_at >= (SELECT _mtd_start FROM period_boundaries) THEN 'MTD'
+            WHEN created_at >= (SELECT _7d_start FROM period_boundaries) THEN '7D'
+            WHEN created_at >= (SELECT _30d_start FROM period_boundaries) THEN '30D'
         END AS period_type,
         ROW_NUMBER() OVER (
             PARTITION BY fromcurrency, 
             CASE 
-                WHEN created_at >= (SELECT ytd_start FROM period_boundaries) THEN 'YTD'
-                WHEN created_at >= (SELECT qtd_start FROM period_boundaries) THEN 'QTD'
-                WHEN created_at >= (SELECT mtd_start FROM period_boundaries) THEN 'MTD'
-                WHEN created_at >= (SELECT 7d_start FROM period_boundaries) THEN '7D'
-                WHEN created_at >= (SELECT 30d_start FROM period_boundaries) THEN '30D'
+                WHEN created_at >= (SELECT _ytd_start FROM period_boundaries) THEN 'YTD'
+                WHEN created_at >= (SELECT _qtd_start FROM period_boundaries) THEN 'QTD'
+                WHEN created_at >= (SELECT _mtd_start FROM period_boundaries) THEN 'MTD'
+                WHEN created_at >= (SELECT _7d_start FROM period_boundaries) THEN '7D'
+                WHEN created_at >= (SELECT _30d_start FROM period_boundaries) THEN '30D'
             END
             ORDER BY created_at ASC
         ) AS rn
     FROM {{ ref('fact_exchange_rates_daily') }}
-    WHERE created_at >= (SELECT 30d_start FROM period_boundaries)
+    WHERE created_at >= (SELECT _30d_start FROM period_boundaries)
 ),
 
 period_start_rates AS (

@@ -15,7 +15,7 @@
     WHEN {{ performance_column }} BETWEEN {{ thresholds[3] }} AND {{ thresholds[2] }} THEN 'Stable'
     WHEN {{ performance_column }} >= {{ thresholds[3] }} THEN 'Moderate Loss'
     ELSE 'Strong Loss'
-  END AS performance_category
+  END 
 {% endmacro %}
 
 {% macro classify_volatility_regime(volatility_percentile) %}
